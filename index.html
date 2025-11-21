@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="description" content="CompoSE: Compositional Synthesis and Editing of 3D Shapes via Part-Aware Control" />
+  <meta name="keywords" content="3D deep learning, shape synthesis, compositional editing, diffusion" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>CompoSE: Compositional Synthesis and Editing of 3D Shapes via Part-Aware Control</title>
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎨</text></svg>" />
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet" />
+
+  <link rel="stylesheet" href="./css/bulma.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma-divider@0.2.0/dist/css/bulma-divider.min.css">
+  <link rel="stylesheet" href="./css/index-v5.css" />
+  <link rel="stylesheet" href="./css/pages.css" />
+  <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+
+  <script type="importmap">
+      {
+          "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+            "three/examples/jsm/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/",
+            "OrbitControls": "./js/OrbitControls.js"
+          }
+      }
+  </script>
+
+  <script src="./js/fontawesome.all.min.js"></script>
+  <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
+  <script type="module" src="./js/mesh-viewer.js"></script>
+
+  <!--MathJax-->
+  <script>
+    window.MathJax = {
+      loader: { load: ['[tex]/boldsymbol'] },
+      tex: {
+        inlineMath: [
+          ["$", "$"],
+          ["\\(", "\\)"],
+        ],
+        packages: { '[+]': ['boldsymbol'] }
+      },
+      svg: {
+        fontCache: "global",
+      },
+    };
+  </script>
+  <script type="text/javascript" id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+  <section class="hero is-landing">
+    <div class="hero-body">
+      <div class="container is-max-desktop">
+        <div class="landing-card">
+          <div class="landing-intro">
+            <h1 class="title is-3 publication-title">
+              CompoSE: Compositional Synthesis and Editing <br />
+              of 3D Shapes via Part-Aware Control
+            </h1>
+          </div>
+          <div class="authors-block" style="margin-top: 1rem;">
+            <div class="authors-list">
+              <span class="author">Anonymous Authors</span>
+            </div>
+            <div class="authors-affiliations">
+              <span>Paper under review</span>
+            </div>
+          </div>
+          <div class="tldr-card">
+            <p class="has-text-centered">
+              A novel method for compositional synthesis and editing of 3D shapes <br />
+              with <strong>part-aware control via coarse geometric primitives.</strong>
+            </p>
+          </div>
+          <div class="publication-links hero-links">
+            <span class="link-block">
+              <a href="#" class="external-link button is-normal is-rounded" disabled
+                style="pointer-events: none; opacity: 0.5;">
+                <span class="icon">
+                  <i class="fas fa-file-pdf"></i>
+                </span>
+                <span>Paper</span>
+              </a>
+            </span>
+            <span class="link-block">
+              <a href="#" class="external-link button is-normal is-rounded" disabled
+                style="pointer-events: none; opacity: 0.5;">
+                <span class="icon">
+                  <i class="fab fa-github"></i>
+                </span>
+                <span>Code</span>
+              </a>
+            </span>
+            <span class="link-block">
+              <a href="#" class="external-link button is-normal is-rounded" disabled
+                style="pointer-events: none; opacity: 0.5;">
+                <span class="icon">&#129303;</span>
+                <span>Model</span>
+              </a>
+            </span>
+            <span class="link-block">
+              <a href="#" class="external-link button is-normal is-rounded" disabled
+                style="pointer-events: none; opacity: 0.5;">
+                <span class="icon">
+                  <img src="./images/dataset-icon.svg" alt="Dataset icon" width="16" height="16" />
+                </span>
+                <span>Dataset</span>
+              </a>
+            </span>
+          </div>
+        </div>
+        <div class="page-stack">
+
+          <div class="section soft-section" style="margin-top: -2rem;">
+            <div class="container is-max-desktop">
+              <div class="columns is-centered has-text-centered">
+                <div class="column is-five-fifths">
+                  <div class="">
+                    <h3 class="title is-4 section-title">Abstract</h3>
+                    <div class="has-text-left">
+                      <p>
+                        Creating and editing high-quality 3D content remains a central challenge in computer graphics.
+                        We address this challenge by introducing <strong>CompoSE</strong>, a novel method for
+                        <strong>Compo</strong>sitional <strong>S</strong>ynthesis and <strong>E</strong>diting of 3D
+                        shapes via part-aware control.
+                        Our method takes as input a set of coarse geometric primitives (e.g., bounding boxes) that
+                        represent distinct object parts arranged in a particular spatial configuration, and synthesizes
+                        as output part-separated 3D objects that support localized granular (i.e., compositional)
+                        editing of individual parts.
+                        <br><br>
+                        The key insight that enables our method is our use of a diffusion transformer architecture that
+                        alternates between processing each part locally and aggregating contextual information across
+                        parts globally, and features a novel conditioning technique that ensures strong adherence to the
+                        user's input.
+                        Importantly, our method learns to infer part semantics and symmetries directly from coarse
+                        layout guidance, and does not require part-level text prompts.
+                        <br><br>
+                        We demonstrate that our method enables powerful compositional editing capabilities, including
+                        context-aware substitution, addition, deletion, and style-preserving resizing operations.
+                        We show through extensive experiments that our method significantly outperforms existing
+                        approaches on a guided synthesis task, as measured by objective metrics and human evaluations.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Condition and Generation Boxes -->
+          <div class="hero teaser gallery-hero" style="margin-top: -6rem;">
+            <div class="is-max-desktop has-text-centered">
+              <div class="">
+                <div class="vis-card"
+                  style="margin-top: 1rem; width: 110%; margin-left: -5%; padding-top: 1.2rem; padding-bottom: 1rem; padding-left: 5px; padding-right: 5px;">
+                  <div class="viewers-container"
+                    style="display: flex; justify-content: center; gap: 2rem; align-items: flex-start;">
+                    <!-- Condition Box -->
+                    <div style="flex: 1; max-width: 350px;">
+                      <h4 class="title is-6" style="margin-bottom: 0.5rem;">Condition</h4>
+                      <p style="color: #666; font-size: 0.9rem; margin-bottom: 0.8rem;">Coarse Bounding Boxes</p>
+                      <div style="background: #e0e0e0; width: 100%; aspect-ratio: 1; border-radius: 4px;"></div>
+                    </div>
+
+                    <!-- Generation Boxes (Two side by side) -->
+                    <div style="flex: 2; display: flex; flex-direction: column; gap: 0rem;">
+                      <div style="margin-bottom: 0.8rem;">
+                        <h4 class="title is-6" style="margin-bottom: 0.5rem;">Generation</h4>
+                        <p style="color: #666; font-size: 0.9rem; margin-bottom: 0.8rem;">Part-Separated Shape</p>
+                      </div>
+
+                      <div style="display: flex; gap: 1.5rem;">
+                        <!-- Generation 1 -->
+                        <div style="flex: 1;">
+                          <div style="background: #e0e0e0; width: 100%; aspect-ratio: 1; border-radius: 4px;"></div>
+                          <p style="color: #888; font-size: 0.85rem; margin-top: 0.5rem; text-align: center;">Sample 1
+                          </p>
+                        </div>
+
+                        <!-- Generation 2 -->
+                        <div style="flex: 1;">
+                          <div style="background: #e0e0e0; width: 100%; aspect-ratio: 1; border-radius: 4px;"></div>
+                          <p style="color: #888; font-size: 0.85rem; margin-top: 0.5rem; text-align: center;">Sample 2
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <p class="subtitle is-6"
+                      style="color: #666; margin-top: 1rem; font-size: 0.95rem; line-height: 1.2;">
+                      Given the coarse bounding box layout (left), our method synthesizes part-separated shapes
+                      (right) that adhere to the text prompt.
+                    </p>
+                  </div>
+
+                  <div class="controls-bar">
+                    <button class="tab-button" data-obj="example_1" data-condition="models/ex1_condition.glb"
+                      data-gen1="models/ex1_gen1.glb" data-gen2="models/ex1_gen2.glb">Example 1</button>
+                    <button class="tab-button" data-obj="example_2" data-condition="models/ex2_condition.glb"
+                      data-gen1="models/ex2_gen1.glb" data-gen2="models/ex2_gen2.glb">Example 2</button>
+                    <button class="tab-button" data-obj="example_3" data-condition="models/ex3_condition.glb"
+                      data-gen1="models/ex3_gen1.glb" data-gen2="models/ex3_gen2.glb">Example 3</button>
+
+                    <div class="rotate-controls">
+                      <button id="btn-rotate" class="rotate-button" style="width: 10em;">
+                        Rotate: On
+                      </button>
+                      <button id="btn-pause" class="rotate-button">
+                        Pause
+                      </button>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Demo Section -->
+          <div class="section soft-section" style="margin-top: 2rem;">
+            <div class="container is-max-desktop">
+              <div class="columns is-centered has-text-centered">
+                <div class="column is-five-fifths">
+                  <div class="">
+                    <h3 class="title is-4 section-title">Demo</h3>
+                    <div class="has-text-left mb-4">
+                      <p>
+                        CompoSE enables intuitive compositional control over 3D shape synthesis and editing through
+                        coarse geometric primitives.
+                        The videos below demonstrate key capabilities of our method across different editing operations.
+                        Generation time is speeded up for visualization purposes.
+                      </p>
+                    </div>
+
+                    <!-- Videos stacked vertically -->
+                    <div
+                      style="display: flex; flex-direction: column; gap: 2.5rem; margin-top: 1.5rem; align-items: center;">
+                      <!-- Video 1 -->
+                      <div style="width: 85%;">
+                        <div class="vis-card" style="padding: 1rem; border-radius: 8px;">
+                          <video class="plyr-video" controls loop muted style="border-radius: 4px;">
+                            <source src="videos/demo_table.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                          </video>
+                        </div>
+                        <p class="has-text-centered" style="margin-top: 0.8rem; font-size: 0.95rem;">
+                          We feature context-aware addition of new parts that harmonize with existing geometry.
+                          In this example, the added legs respect the style of previously existing legs.
+                        </p>
+                      </div>
+
+                      <!-- Video 2 -->
+                      <div style="width: 85%;">
+                        <div class="vis-card" style="padding: 1rem; border-radius: 8px;">
+                          <video class="plyr-video" controls loop muted style="border-radius: 4px;">
+                            <source src="videos/demo_signpost.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                          </video>
+                        </div>
+                        <p class="has-text-centered" style="margin-top: 0.8rem; font-size: 0.95rem;">
+                          We show generation and addition of new parts that respect existing part semantics and
+                          symmetries.
+                        </p>
+                      </div>
+
+                      <!-- Video 3 -->
+                      <div style="width: 85%;">
+                        <div class="vis-card" style="padding: 1rem; border-radius: 8px;">
+                          <video class="plyr-video" controls loop muted style="border-radius: 4px;">
+                            <source src="videos/demo_bench.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                          </video>
+                        </div>
+                        <p class="has-text-centered" style="margin-top: 0.8rem; font-size: 0.95rem;">
+                          We feature generation and part substitutions following new part layouts and prompts.
+                        </p>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Framework Section -->
+          <div class="section soft-section" style="margin-top: 2rem;">
+            <div class="container is-max-desktop">
+              <div class="columns is-centered has-text-centered">
+                <div class="column is-five-fifths">
+                  <div class="">
+                    <h3 class="title is-4 section-title">Framework</h3>
+                    <div class="has-text-left mb-2">
+                      <p>
+                        <strong>Our diffusion transformer (DiT) architecture for compositional synthesis and editing
+                          with part-aware control.</strong>
+                        Our architecture alternates between local and global stages.
+                        Local stages process individual geometric primitives provided by the user; and global blocks
+                        aggregate context cues and text information across primitives.
+                      </p>
+                    </div>
+                    <div class="columns is-centered has-text-centered" style="margin-top: 1rem;">
+                      <div class="column is-fullwidth">
+                        <div class="publication-teaser">
+                          <img src="assets/fig_method.png" alt="CompoSE framework figure"
+                            class="publication-teaser-img framed-image" style="width: 100%;">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Part Editing -->
+          <div class="section pt-0 soft-section">
+            <div class="container is-max-desktop">
+              <div class="columns is-centered has-text-centered">
+                <div class="column is-five-fifths">
+                  <div class="section" style="margin-top: -4rem;">
+                    <div class="container is-max-desktop has-text-centered is-centered">
+                      <h2 class="title is-4 has-text-centered section-title">Part-Level Editing</h2>
+                      <p class="has-text-left" style="padding-bottom: 2rem; margin: 0 auto;">
+                        We demonstrate our method's versatility through diverse part-level editing operations. In the
+                        first two rows,
+                        we showcase edit sequences starting from a base shape. We iteratively add parts by creating new
+                        part controls, deleting them, or substitute
+                        them by changing the text prompt or rescaling without style preservation. In the last row, we
+                        showcase two examples of style-preserving
+                        rescaling operations.
+                      </p>
+
+                      <div class="columns is-centered has-text-centered">
+                        <figure class="image is-fullwidth">
+                          <img id="section2_figure" src="./assets/fig_editing.png" alt="Section 2 results"
+                            style="width: 100%; display: block; margin: 0 auto;" class="framed-image">
+                          <figcaption>
+                            <!-- TODO: Add caption -->
+                          </figcaption>
+                        </figure>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Comparison with SoTA -->
+          <div class="section pt-0 soft-section">
+            <div class="container is-max-desktop">
+              <div class="columns is-centered has-text-centered">
+                <div class="column is-five-fifths">
+                  <div class="section" style="margin-top: -4rem;">
+                    <div class="container is-max-desktop has-text-centered is-centered">
+                      <h2 class="title is-4 has-text-centered section-title">Comparative Results</h2>
+
+                      <p class="has-text-left" style="padding-bottom: 2rem; margin: 0 auto;">
+                        We compare our method to two guidance-based methods, Spice-E and Fantasia3D.
+                        Note that these methods generate holistic shapes without part-level decomposition.
+                        We provide baselines with the same coarse guidance shape and text prompt as our method.
+                        Unlike baselines that generate holistic shapes, our method produces higher-quality geometry with
+                        part-level decomposition without requiring part-level annotations.
+                      </p>
+
+                      <div class="columns is-centered has-text-centered" style="margin-top: 1rem;">
+                        <figure class="image is-fullwidth">
+                          <img id="section1_figure" src="./assets/fig_comparison.png" alt="Section 1 results"
+                            style="width: 100%; display: block; margin: 0 auto;" class="framed-image">
+                          <figcaption>
+                            <!-- TODO: Add caption -->
+                          </figcaption>
+                        </figure>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+  </section>
+
+  <footer class="footer pt-4 pb-0">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column is-8">
+          <div class="content has-text-centered">
+            <p>
+              Website template based on
+              <a href="https://github.com/nerfies/nerfies.github.io">
+                Nerfies
+              </a>
+              and licensed under
+              <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
+                CC-BY-SA-4.0 </a>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Initialize Plyr video players
+    const players = Plyr.setup('.plyr-video', {
+      controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'settings', 'fullscreen'],
+      settings: ['quality', 'speed', 'loop']
+    });
+  </script>
+</body>
+
+</html>
